@@ -6,13 +6,21 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@EnableWebSecurity(debug = true)//Указывает Spring контейнеру, чтобы находил файл конфигурации в классе. debug = true - для просмотра какие бины были созданы, в production нужно ставить false
+@EnableWebSecurity(debug = true)
+// Указывает Spring контейнеру, чтобы находил файл конфигурации в классе. debug = true - для просмотра лога какие бины были созданы, в production нужно ставить false
 public class SpringConfig extends WebSecurityConfigurerAdapter {
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin().disable();//Отключаем т.к. форма авторизации создается не на Spring технологии(например, Spring MVC + JSP), а на любой другой клиентской технологии
-        http.httpBasic().disable();//Отключаем стандартную браузерную форму авторизации
 
-        http.requiresChannel().anyRequest().requiresSecure();//Обязательно использовать HTTPS
+        // порядок следования настроек внутри метода - неважен
+
+        http.formLogin().disable(); // отключаем, т.к. форма авторизации создается не на Spring технологии (например, Spring MVC + JSP), а на любой другой клиентской технологии
+        http.httpBasic().disable(); // отключаем стандартную браузерную форму авторизации
+
+        http.requiresChannel().anyRequest().requiresSecure(); // обязательное исп. HTTPS
+
+
     }
+
 }
