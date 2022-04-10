@@ -1,7 +1,8 @@
 package ru.tasklist.springboot.business.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tasklist.springboot.business.entity.Category;
@@ -20,9 +21,9 @@ public class CategoryController {
         this.service = service;
     }
 
-    @GetMapping("/all")
-    public List<Category> findAll() {
-        return service.findAll("");
+    @PostMapping("/all")
+    public List<Category> findAll(@RequestBody String email) {
+        return service.findAll(email);
     }
 
 }
