@@ -2,6 +2,7 @@ package ru.tasklist.springboot.business.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,5 +57,17 @@ public class CategoryController {
         }
 
         return ResponseEntity.ok(service.update(category));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity delete(@RequestBody Long categoryId) {
+        log.info("Delete category Id - {}", categoryId);
+
+        try {
+            service.delete(categoryId);
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity("Id not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
