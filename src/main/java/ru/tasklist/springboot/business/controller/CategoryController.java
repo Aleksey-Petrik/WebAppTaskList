@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tasklist.springboot.business.entity.Category;
+import ru.tasklist.springboot.business.search.CategorySearchValues;
 import ru.tasklist.springboot.business.service.CategoryService;
 
 import java.util.List;
@@ -27,6 +28,13 @@ public class CategoryController {
     public List<Category> findAll(@RequestBody String email) {
         log.info("POST get all categories for email - {}", email);
         return service.findAll(email);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValues) {
+        log.info("POST search criteria categories - {}", categorySearchValues);
+        List<Category> categories = service.findByTitle(categorySearchValues.getTitle(), categorySearchValues.getEmail());
+        return ResponseEntity.ok(categories);
     }
 
     @PutMapping("/add")
