@@ -11,6 +11,7 @@ import ru.tasklist.springboot.business.search.CategorySearchValues;
 import ru.tasklist.springboot.business.service.CategoryService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @RestController
@@ -35,6 +36,15 @@ public class CategoryController {
         log.info("POST search criteria categories - {}", categorySearchValues);
         List<Category> categories = service.findByTitle(categorySearchValues.getTitle(), categorySearchValues.getEmail());
         return ResponseEntity.ok(categories);
+    }
+
+    @PostMapping("/id")
+    public ResponseEntity<Category> search(@RequestBody Long categoryId) {
+        log.info("POST search for id categories - {}", categoryId);
+
+        Optional<Category> optionalCategory = service.findById(categoryId);
+        return optionalCategory.map(ResponseEntity::ok)
+                .orElseGet(() -> new ResponseEntity(String.format("Category with id = %d not found.", categoryId), HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/add")
