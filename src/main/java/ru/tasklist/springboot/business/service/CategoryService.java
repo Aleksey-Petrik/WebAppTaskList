@@ -6,6 +6,7 @@ import ru.tasklist.springboot.business.entity.Category;
 import ru.tasklist.springboot.business.repository.CategoryRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -23,6 +24,10 @@ public class CategoryService {
 
     public List<Category> findByTitle(String title, String email) {
         return repository.findByTitle(title, email);
+    }
+
+    public Optional<Category> findById(Long categoryId) {
+        return repository.findById(categoryId);
     }
 
     public Category add(Category category) {
