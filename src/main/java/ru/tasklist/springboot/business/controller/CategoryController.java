@@ -34,7 +34,7 @@ public class CategoryController {
     @PostMapping("/search")
     public ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValues) {
         log.info("POST search criteria categories - {}", categorySearchValues);
-        List<Category> categories = service.findByTitle(categorySearchValues.getTitle(), categorySearchValues.getEmail());
+        List<Category> categories = service.find(categorySearchValues.getTitle(), categorySearchValues.getEmail());
         return ResponseEntity.ok(categories);
     }
 

@@ -5,10 +5,12 @@ import org.springframework.stereotype.Service;
 import ru.tasklist.springboot.business.entity.Category;
 import ru.tasklist.springboot.business.repository.CategoryRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CategoryService {
 
     private final CategoryRepository repository;
@@ -22,8 +24,8 @@ public class CategoryService {
         return repository.findByUserEmailOrderByTitleAsc(email);
     }
 
-    public List<Category> findByTitle(String title, String email) {
-        return repository.findByTitle(title, email);
+    public List<Category> find(String title, String email) {
+        return repository.find(title, email);
     }
 
     public Optional<Category> findById(Long categoryId) {
