@@ -39,7 +39,7 @@ public class CategoryController {
     }
 
     @PostMapping("/id")
-    public ResponseEntity<Category> search(@RequestBody Long categoryId) {
+    public ResponseEntity<Category> findById(@RequestBody Long categoryId) {
         log.info("POST search for id categories - {}", categoryId);
 
         Optional<Category> optionalCategory = service.findById(categoryId);

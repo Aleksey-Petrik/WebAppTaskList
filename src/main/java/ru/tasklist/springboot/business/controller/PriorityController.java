@@ -11,7 +11,6 @@ import ru.tasklist.springboot.business.search.CategorySearchValues;
 import ru.tasklist.springboot.business.service.PriorityService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @RestController
@@ -38,11 +37,9 @@ public class PriorityController {
     }
 
     @PostMapping("/id")
-    public ResponseEntity<Priority> search(@RequestBody Long priorityId) {
+    public ResponseEntity<Priority> findById(@RequestBody Long priorityId) {
         log.info("POST search for id priorities - {}", priorityId);
-
-        Optional<Priority> optionalPriority = service.findById(priorityId);
-        return optionalPriority.map(ResponseEntity::ok)
+        return service.findById(priorityId).map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity(String.format("Priority with id = %d not found.", priorityId), HttpStatus.NOT_FOUND));
     }
 
