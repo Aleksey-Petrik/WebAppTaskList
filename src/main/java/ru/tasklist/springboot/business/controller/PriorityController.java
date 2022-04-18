@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tasklist.springboot.business.entity.Priority;
-import ru.tasklist.springboot.business.search.CategorySearchValues;
+import ru.tasklist.springboot.business.search.PrioritySearchValues;
 import ru.tasklist.springboot.business.service.PriorityService;
 
 import java.util.List;
@@ -30,9 +30,9 @@ public class PriorityController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<Priority>> search(@RequestBody CategorySearchValues categorySearchValues) {
-        log.info("POST search criteria priorities - {}", categorySearchValues);
-        List<Priority> priorities = service.find(categorySearchValues.getTitle(), categorySearchValues.getEmail());
+    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues) {
+        log.info("POST search criteria priorities - {}", prioritySearchValues);
+        List<Priority> priorities = service.find(prioritySearchValues.getTitle(), prioritySearchValues.getEmail());
         return ResponseEntity.ok(priorities);
     }
 
