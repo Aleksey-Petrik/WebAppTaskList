@@ -16,7 +16,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "OR LOWER(category.title) LIKE LOWER(CONCAT('%', :title, '%') ))" +
             "AND category.user.email = :email " +
             "ORDER BY category.title ASC")
-    List<Category> find(@Param("title") String title, @Param("email") String email);
+    List<Category> find(@Param("title") String title,
+                        @Param("email") String email);
 
     //Запрос поиска категории по email по имени метода
     List<Category> findByUserEmailOrderByTitleAsc(String email);
