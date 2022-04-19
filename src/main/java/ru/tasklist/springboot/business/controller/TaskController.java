@@ -86,7 +86,7 @@ public class TaskController {
                 || sortDirection.trim().length() == 0
                 || sortDirection.trim().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
-        Sort sort = Sort.by(direction, sortColumn, "id");
+        Sort sort = Sort.by(direction, sortColumn == null ? "id" : sortColumn, "id");
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 

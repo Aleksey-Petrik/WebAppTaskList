@@ -21,8 +21,8 @@ public class TaskSearchValues {
     private Date dateFrom;
     private Date dateTo;
     //Постраничность
-    private Integer pageNumber;
-    private Integer pageSize;
+    private Integer pageNumber = 0;
+    private Integer pageSize = 10;
     //Сортировка
     private String sortColumn;
     private String sortDirection;
