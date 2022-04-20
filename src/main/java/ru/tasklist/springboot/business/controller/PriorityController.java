@@ -30,7 +30,7 @@ public class PriorityController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues) {
+    public ResponseEntity<List<Priority>> findByParams(@RequestBody PrioritySearchValues prioritySearchValues) {
         log.info("POST search criteria priorities - {}", prioritySearchValues);
         List<Priority> priorities = service.find(prioritySearchValues.getTitle(), prioritySearchValues.getEmail());
         return ResponseEntity.ok(priorities);
@@ -50,11 +50,9 @@ public class PriorityController {
         if (priority.getId() != null && priority.getId() != 0) {
             return new ResponseEntity("Id mast be empty", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (priority.getTitle().isEmpty() || priority.getTitle().isBlank()) {
             return new ResponseEntity("Title not be empty", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (priority.getColor().isEmpty() || priority.getColor().isBlank()) {
             return new ResponseEntity("Color not be empty", HttpStatus.NOT_ACCEPTABLE);
         }

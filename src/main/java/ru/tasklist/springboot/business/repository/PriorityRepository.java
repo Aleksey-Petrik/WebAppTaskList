@@ -17,5 +17,4 @@ public interface PriorityRepository extends JpaRepository<Priority, Long> {
     List<Priority> find(@Param("title") String title, @Param("email") String email);
 
     List<Priority> findByUserEmailOrderByTitleAsc(String email);
-
 }

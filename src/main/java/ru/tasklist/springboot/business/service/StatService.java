@@ -21,5 +21,4 @@ public class StatService {
     public Stat findStat(String email) {
         return repository.findByUserEmail(email);
     }
-
 }

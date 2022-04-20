@@ -54,7 +54,6 @@ public class CategoryController {
         if (category.getId() != null && category.getId() != 0) {
             return new ResponseEntity("Id mast be empty", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (category.getTitle().isEmpty() || category.getTitle().isBlank()) {
             return new ResponseEntity("Title not be empty", HttpStatus.NOT_ACCEPTABLE);
         }
@@ -69,7 +68,6 @@ public class CategoryController {
         if (category.getId() == null || category.getId() == 0) {
             return new ResponseEntity("Id not be empty", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (category.getTitle().isEmpty() || category.getTitle().isBlank()) {
             return new ResponseEntity("Title not be empty", HttpStatus.NOT_ACCEPTABLE);
         }
@@ -80,7 +78,6 @@ public class CategoryController {
     @DeleteMapping("/delete")
     public ResponseEntity delete(@RequestBody Long categoryId) {
         log.info("Delete category Id - {}", categoryId);
-
         try {
             service.delete(categoryId);
         } catch (EmptyResultDataAccessException e) {
