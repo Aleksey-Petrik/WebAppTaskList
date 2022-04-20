@@ -21,5 +21,4 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     //Запрос поиска категории по email по имени метода
     List<Category> findByUserEmailOrderByTitleAsc(String email);
-
 }

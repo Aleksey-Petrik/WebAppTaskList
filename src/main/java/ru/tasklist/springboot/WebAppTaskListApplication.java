@@ -9,5 +9,4 @@ public class WebAppTaskListApplication {
     public static void main(String[] args) {
         SpringApplication.run(WebAppTaskListApplication.class, args);
     }
-
 }
