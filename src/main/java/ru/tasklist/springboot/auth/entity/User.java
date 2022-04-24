@@ -35,6 +35,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -3,6 +3,7 @@ package ru.tasklist.springboot.auth.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -11,10 +12,11 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Getter
 @Setter
+@DynamicUpdate
 public class Activity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "activated")
     @Type(type = "org.hibernate.type.NumericBooleanType")
