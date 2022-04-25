@@ -4,12 +4,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.tasklist.springboot.auth.entity.Activity;
 import ru.tasklist.springboot.auth.entity.User;
 import ru.tasklist.springboot.auth.exception.JsonException;
 import ru.tasklist.springboot.auth.exception.RoleNotFoundException;
+import ru.tasklist.springboot.auth.exception.UserAlreadyActivatedException;
 import ru.tasklist.springboot.auth.exception.UserOrEmailAlreadyException;
 import ru.tasklist.springboot.auth.service.UserService;
 
@@ -60,6 +62,22 @@ public class AuthController {
         return service.register(user, activity)
                 ? ResponseEntity.ok().build()
                 : new ResponseEntity("Error in registers.", HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @PostMapping("/activate-account")
+    public ResponseEntity<Boolean> activateUser(@RequestBody String uuid) {
+        //Проверка на существование пользователя
+        Activity activity = service.findActivityByUuid(uuid)
+                .orElseThrow(() -> new UsernameNotFoundException("Activity for user not found bad uuid - " + uuid));
+
+        //Проверка на ранее произведенную активацию
+        if (activity.isActivated()) {
+            throw new UserAlreadyActivatedException("User already activated!");
+        }
+        //Количество активированных записей, в теории всегда один
+        int updateCount = service.activate(activity.getUuid());
+
+        return ResponseEntity.ok(updateCount == 1);
     }
 
     //Обработчик ошибок, заворачивает в JSON

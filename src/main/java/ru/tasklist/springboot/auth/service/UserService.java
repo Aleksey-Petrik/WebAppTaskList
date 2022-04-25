@@ -32,6 +32,7 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    //Регистрация нового пользователя, предварительно проверив наличие его в базе
     public boolean register(User user, Activity activity) {
         return userRepository.save(user) != null
                 && activityRepository.save(activity) != null;
@@ -49,4 +50,15 @@ public class UserService {
         return roleRepository.findByName(nameRole);
     }
 
+    public Optional<Activity> findActivityByUuid(String uuid) {
+        return activityRepository.findByUuid(uuid);
+    }
+
+    public int activate(String uuid) {
+        return activityRepository.changeActivated(true, uuid);
+    }
+
+    public int deactivate(String uuid) {
+        return activityRepository.changeActivated(false, uuid);
+    }
 }
