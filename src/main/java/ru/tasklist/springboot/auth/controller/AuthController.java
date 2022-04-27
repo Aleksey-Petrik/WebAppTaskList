@@ -4,6 +4,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +18,7 @@ import ru.tasklist.springboot.auth.exception.JsonException;
 import ru.tasklist.springboot.auth.exception.RoleNotFoundException;
 import ru.tasklist.springboot.auth.exception.UserAlreadyActivatedException;
 import ru.tasklist.springboot.auth.exception.UserOrEmailAlreadyException;
+import ru.tasklist.springboot.auth.service.UserDetailsImpl;
 import ru.tasklist.springboot.auth.service.UserService;
 
 import javax.validation.Valid;
@@ -27,11 +33,13 @@ public class AuthController {
 
     private final UserService service;
     private final PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager; // стандартный встроенный менеджер Spring, проверяет логин-пароль
 
     @Autowired
-    public AuthController(UserService service, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.service = service;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/id")
@@ -79,6 +87,25 @@ public class AuthController {
 
         return ResponseEntity.ok(updateCount == 1);
     }
+
+    // Залогиниться по паролю-пользователю
+    // этот метод всем будет доступен для вызова (не будем его "защищать" с помощью токенов, т.к. это не требуется по задаче)
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@Valid @RequestBody User user) {
+        // проверяем логин-пароль
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        // добавляем в Spring-контейнер информацию об авторизации (чтобы Spring понимал, что пользователь успешно вошел и мог использовать его роли и другие параметры)
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // UserDetailsImpl - спец. объект, который хранится в Spring контейнере и содержит данные пользователя
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        // активирован пользователь или нет (проверяем только после того, как пользователь успешно залогиниться)
+        if (!userDetails.isActivated()) {
+            throw new DisabledException("User disable!");
+        }
+        // если мы дошло до этой строки, значит пользователь успешно залогинился
+        return ResponseEntity.ok().body(userDetails.getUser());
+    }
+
 
     //Обработчик ошибок, заворачивает в JSON
     @ExceptionHandler(Exception.class)
