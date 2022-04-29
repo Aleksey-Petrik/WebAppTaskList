@@ -37,7 +37,7 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
@@ -54,7 +54,9 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
         http.formLogin().disable(); // отключаем, т.к. форма авторизации создается не на Spring технологии (например, Spring MVC + JSP), а на любой другой клиентской технологии
         http.httpBasic().disable(); // отключаем стандартную браузерную форму авторизации
 
-        http.requiresChannel().anyRequest().requiresSecure(); // обязательное исп. HTTPS
+        http.requiresChannel()
+                .anyRequest()
+                .requiresSecure(); // обязательное исп. HTTPS
 
     }
 

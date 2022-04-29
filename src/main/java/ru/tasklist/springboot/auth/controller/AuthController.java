@@ -33,7 +33,7 @@ public class AuthController {
 
     private final UserService service;
     private final PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager; // стандартный встроенный менеджер Spring, проверяет логин-пароль
+    private final AuthenticationManager authenticationManager; // стандартный встроенный менеджер Spring, проверяет логин-пароль
 
     @Autowired
     public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
@@ -105,7 +105,6 @@ public class AuthController {
         // если мы дошло до этой строки, значит пользователь успешно залогинился
         return ResponseEntity.ok().body(userDetails.getUser());
     }
-
 
     //Обработчик ошибок, заворачивает в JSON
     @ExceptionHandler(Exception.class)
