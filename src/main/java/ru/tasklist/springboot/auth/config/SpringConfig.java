@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.tasklist.springboot.auth.service.UserDetailsServiceImpl;
@@ -49,6 +50,9 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
             то выключаем встроенную Spring-защиту от CSRF атак,
             иначе запросы от клиента не будут обрабатываться, т.к. Spring Security будет пытаться в каждом входящем запроcе искать спец. токен для защиты от CSRF
         */
+
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//SessionCreationPolicy.STATELESS - для того чтобы сессии не создавались
+
         http.csrf().disable(); // На время разработки проекта не будет ошибок (для POST, PUT и др. запросов) - недоступен и т.д.
 
         http.formLogin().disable(); // отключаем, т.к. форма авторизации создается не на Spring технологии (например, Spring MVC + JSP), а на любой другой клиентской технологии
