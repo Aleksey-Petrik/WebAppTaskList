@@ -35,6 +35,11 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager; // стандартный встроенный менеджер Spring, проверяет логин-пароль
 
+    @GetMapping("/test")
+    public String test() {
+        return "OK";
+    }
+
     @Autowired
     public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.service = service;
