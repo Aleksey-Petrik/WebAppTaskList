@@ -12,9 +12,11 @@ import java.io.IOException;
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
+    // этот метод вызывается автоматически при каждом входящем запросе
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        filterChain.doFilter(request, response);
+
+        filterChain.doFilter(request, response);// продолжить выполнение запроса (запрос отправится дальше в контроллер)
     }
 
 }
