@@ -20,6 +20,7 @@ import ru.tasklist.springboot.auth.exception.UserAlreadyActivatedException;
 import ru.tasklist.springboot.auth.exception.UserOrEmailAlreadyException;
 import ru.tasklist.springboot.auth.service.UserDetailsImpl;
 import ru.tasklist.springboot.auth.service.UserService;
+import ru.tasklist.springboot.auth.utils.JwtUtils;
 
 import javax.validation.Valid;
 import java.util.UUID;
@@ -31,9 +32,10 @@ import static ru.tasklist.springboot.auth.service.UserService.DEFAULT_ROLE;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService service;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService service;//Сервис для работы с пользователями
+    private final PasswordEncoder passwordEncoder;//Кодировщик паролей или других данных, создает односторонний хеш
     private final AuthenticationManager authenticationManager; // стандартный встроенный менеджер Spring, проверяет логин-пароль
+    private final JwtUtils jwtUtils;//Утильный класс для работы с jwt
 
     @GetMapping("/test")
     public String test() {
@@ -41,10 +43,11 @@ public class AuthController {
     }
 
     @Autowired
-    public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.service = service;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/id")
@@ -107,6 +110,9 @@ public class AuthController {
         if (!userDetails.isActivated()) {
             throw new DisabledException("User disable!");
         }
+
+        String jwt = jwtUtils.createAccessToken(userDetails.getUser());
+
         // если мы дошло до этой строки, значит пользователь успешно залогинился
         return ResponseEntity.ok().body(userDetails.getUser());
     }
