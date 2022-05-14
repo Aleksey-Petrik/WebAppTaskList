@@ -2,6 +2,8 @@ package ru.tasklist.springboot.auth.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +22,7 @@ import ru.tasklist.springboot.auth.exception.UserAlreadyActivatedException;
 import ru.tasklist.springboot.auth.exception.UserOrEmailAlreadyException;
 import ru.tasklist.springboot.auth.service.UserDetailsImpl;
 import ru.tasklist.springboot.auth.service.UserService;
+import ru.tasklist.springboot.auth.utils.CookieUtils;
 import ru.tasklist.springboot.auth.utils.JwtUtils;
 
 import javax.validation.Valid;
@@ -36,6 +39,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;//Кодировщик паролей или других данных, создает односторонний хеш
     private final AuthenticationManager authenticationManager; // стандартный встроенный менеджер Spring, проверяет логин-пароль
     private final JwtUtils jwtUtils;//Утильный класс для работы с jwt
+    private final CookieUtils cookieUtils;// класс-утилита для работы с куками
 
     @GetMapping("/test")
     public String test() {
@@ -43,11 +47,12 @@ public class AuthController {
     }
 
     @Autowired
-    public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, CookieUtils cookieUtils) {
         this.service = service;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.cookieUtils = cookieUtils;
     }
 
     @PostMapping("/id")
@@ -111,10 +116,22 @@ public class AuthController {
             throw new DisabledException("User disable!");
         }
 
+        // если мы дошло до этой строки, значит пользователь успешно залогинился
+
+        // после каждого успешного входа генерируется новый jwt, чтобы следующие запросы на backend авторизовывать автоматически
         String jwt = jwtUtils.createAccessToken(userDetails.getUser());
 
-        // если мы дошло до этой строки, значит пользователь успешно залогинился
-        return ResponseEntity.ok().body(userDetails.getUser());
+        userDetails.getUser().setPassword(null); // пароль нужен только один раз для аутентификации - поэтому можем его занулить, чтобы больше нигде не "засветился"
+
+        // создаем кук со значением jwt (браузер будет отправлять его автоматически на backend при каждом запросе)
+        // обратите внимание на флаги безопасности в методе создания кука
+        HttpCookie cookie = cookieUtils.createJwtCookie(jwt); // server-side cookie
+
+        HttpHeaders responseHeaders = new HttpHeaders(); // объект для добавления заголовков в response
+        responseHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString()); // добавляем server-side cookie в заголовок (header)
+
+        // отправляем клиенту данные пользователя (и jwt-кук в заголовке Set-Cookie)
+        return ResponseEntity.ok().headers(responseHeaders).body(userDetails.getUser());
     }
 
     //Обработчик ошибок, заворачивает в JSON
