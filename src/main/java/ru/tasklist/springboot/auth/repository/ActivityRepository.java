@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface ActivityRepository extends CrudRepository<Activity, Long> {
-
     @Modifying
     @Transactional
     @Query("UPDATE Activity a SET a.activated = :active WHERE a.uuid = :uuid")
