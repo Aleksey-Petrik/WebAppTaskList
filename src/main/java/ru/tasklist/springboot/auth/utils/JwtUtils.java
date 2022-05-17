@@ -12,11 +12,8 @@ import java.util.Date;
 @Log4j2
 @Component
 public class JwtUtils {
-
     @Value("${jwt.secret}")
     private String jwtSecret; // секретный ключ для создания jwt (хранится только на сервере, нельзя никуда передавать)
-
-
     @Value("${jwt.access_token-expiration}") // 86400000 мс = 1 сутки
     private int accessTokenExpiration; // длительность токена для автоматического логина (все запросы будут автоматически проходить аутентификацию, если в них присутствует JWT)
     // название взяли по аналогии с протоколом OAuth2, но не путайте - это просто название нашего JWT, здесь мы не применяем OAuth2

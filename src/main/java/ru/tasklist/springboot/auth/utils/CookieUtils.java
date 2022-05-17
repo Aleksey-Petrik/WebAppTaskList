@@ -30,7 +30,6 @@ public class CookieUtils {
     // Создает server-side cookie со значением jwt. Важно: этот кук сможет считывать только сервер, клиент не сможет с помощью JS или другого клиентского кода (сделано для безопасности)
     public HttpCookie createJwtCookie(String jwt) { // jwt - значение для кука
         return ResponseCookie
-
                 // настройки кука
                 .from(ACCESS_TOKEN, jwt) // название и значение кука
                 .maxAge(cookieAccessTokenDuration) // 86400 сек = 1 сутки
@@ -41,7 +40,6 @@ public class CookieUtils {
                 .path("/") // кук будет доступен для всех URL
                 // создание объекта
                 .build();
-
         /*
             Примечание: все настройки кука (domain, path и пр.) - влияют на то, будет ли браузер отправлять их при запросе.
 
