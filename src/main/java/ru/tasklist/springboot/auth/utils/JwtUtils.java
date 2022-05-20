@@ -1,15 +1,15 @@
 package ru.tasklist.springboot.auth.utils;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.extern.log4j.Log4j2;
+import io.jsonwebtoken.*;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.tasklist.springboot.auth.entity.User;
 
 import java.util.Date;
+import java.util.logging.Level;
 
-@Log4j2
+@Log
 @Component
 public class JwtUtils {
     @Value("${jwt.secret}")
@@ -33,6 +33,33 @@ public class JwtUtils {
 
                 .signWith(SignatureAlgorithm.HS512, jwtSecret) // используем алгоритм кодирования HS512 (часто используемый в соотношении скорость-качество) - хешируем все данные секретным ключом-строкой
                 .compact(); // кодируем в формат Base64 (это не шифрование, а просто представление данных в виде удобной строки)
+    }
+
+    // проверить целостность данных (не истек ли срок jwt и пр.)
+    public boolean validate(String jwt) {
+        try {
+            Jwts.
+                    parser(). // проверка формата на корректность
+                    setSigningKey(jwtSecret). // указываем каким ключом будет проверять подпись
+                    parseClaimsJws(jwt); // проверка подписи "секретом"
+            return true; // проверка прошла успешно
+        } catch (MalformedJwtException e) {
+            log.log(Level.SEVERE, "Invalid JWT token: ", jwt);
+        } catch (ExpiredJwtException e) {
+            log.log(Level.SEVERE, "JWT token is expired: ", jwt);
+        } catch (UnsupportedJwtException e) {
+            log.log(Level.SEVERE, "JWT token is unsupported: ", jwt);
+        } catch (IllegalArgumentException e) {
+            log.log(Level.SEVERE, "JWT claims string is empty: ", jwt);
+        }
+
+        return false; // валидация не прошла успешно (значит данные payload были изменены - подпись была наложена не на этот payload)
+
+        /*
+        Сервер проверяет своим ключом JWT.
+        Если подпись не прошла проверку (failed) - значит эти данные были подписаны на нашим secret (или сами данные после подписи были изменены), а значит к данным нет доверия.
+        Сервер может доверять только тем данным, которые подписаны его secret ключом. Этот ключ хранится только на сервере, а значит никто кроме сервера не мог им воспользоваться и подписать данные.
+        */
     }
 
 }

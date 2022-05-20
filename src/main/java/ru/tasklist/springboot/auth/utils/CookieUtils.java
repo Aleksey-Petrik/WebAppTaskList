@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 /*
 
 Утилита для работы с куками
@@ -47,4 +50,20 @@ public class CookieUtils {
             И если есть хотя бы одно несовпадение (например domain или path) - кук отправлен не будет.
           */
     }
+
+    // получает значение кук access_token и возвращает его значение (JWT)
+    public String getCookieAccessToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) { // если в запросе были переданы какие-либо куки
+
+            for (Cookie cookie : cookies) { // перебор всех куков
+                if (ACCESS_TOKEN.equals(cookie.getName())) { // если есть наш кук (по названию) - то берем его
+                    return cookie.getValue(); // получаем значение кука (JWT)
+                }
+            }
+        }
+        return null; // значит кук не нашли - возвращаем null
+    }
+
 }
