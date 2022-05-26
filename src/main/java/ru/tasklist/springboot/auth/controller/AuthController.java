@@ -46,6 +46,16 @@ public class AuthController {
         return "OK";
     }
 
+    @PostMapping("/test-no-auth")
+    public String testNoAuth() {
+        return "Ok-no-auth";
+    }
+
+    @PostMapping("/test-with-auth")
+    public String testWithAuth() {
+        return "Ok-with-auth";
+    }
+
     @Autowired
     public AuthController(UserService service, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, CookieUtils cookieUtils) {
         this.service = service;
