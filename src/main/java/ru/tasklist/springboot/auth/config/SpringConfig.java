@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.session.SessionManagementFilter;
 import ru.tasklist.springboot.auth.filter.AuthTokenFilter;
+import ru.tasklist.springboot.auth.filter.ExceptionHandlerFilter;
 import ru.tasklist.springboot.auth.service.UserDetailsServiceImpl;
 
 @Configuration
@@ -26,10 +27,16 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
 
     // перехватывает все выходящие запросы (проверяет jwt если необходимо, автоматически логинит пользователя)
     private AuthTokenFilter authTokenFilter;// его нужно зарегистрировать в filterchain
+    private ExceptionHandlerFilter exceptionHandlerFilter; // самый верхний фильтр, который отлавливает ошибки во всех следующих фильтрах и отправляет клиенту в формате JSON
 
     @Autowired
     public void setUserDetailsService(UserDetailsServiceImpl userDetailsService) {// внедряем наш компонент Spring @Service
         this.userDetailsService = userDetailsService;
+    }
+
+    @Autowired
+    public void setExceptionHandlerFilter(ExceptionHandlerFilter exceptionHandlerFilter) {
+        this.exceptionHandlerFilter = exceptionHandlerFilter;
     }
 
     @Autowired
@@ -62,8 +69,8 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
     // нужно отключить вызов фильтра AuthTokenFilter для сервлет контейнера (чтобы фильтр вызывался не 2 раза, а только один раз из Spring контейнера)
     // https://stackoverflow.com/questions/39314176/filter-invoke-twice-when-register-as-spring-bean
     @Bean
-    public FilterRegistrationBean registration(AuthTokenFilter authTokenFilter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean(authTokenFilter);// FilterRegistrationBean - регистратор фильтров для сервлет контейнера
+    public FilterRegistrationBean registration(AuthTokenFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean(filter);// FilterRegistrationBean - регистратор фильтров для сервлет контейнера
         registration.setEnabled(false);// отключить исп-е фильтра для сервлет контейнера
         return registration;
     }
@@ -89,6 +96,9 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
 
         // authTokenFilter - валидация JWT, до того, как запрос попадет в контроллер
         http.addFilterBefore(authTokenFilter, SessionManagementFilter.class);// добавляем наш фильтр в securityfilterchain
+
+        // отлавливает ошибки последующих фильтром и отправляет их клиенту в формате JSON
+        http.addFilterBefore(exceptionHandlerFilter, AuthTokenFilter.class); // этот фильтр должен обязательно находиться перед всеми нашими остальными фильтрами
     }
 
 }
